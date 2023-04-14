@@ -1,0 +1,17 @@
+from scapy.all import *
+
+# Define a function to handle captured packets
+def packet_handler(packet):
+    print(packet.summary())
+
+# Start capturing packets on the specified interface
+sniff(iface="eth0", prn=packet_handler)
+
+from scapy.all import *
+
+# Define a function to handle captured packets
+def packet_handler(packet):
+    print(packet.show())
+
+# Start capturing packets on the specified interface
+sniff(filter="tcp and port 80", prn=packet_handler)
