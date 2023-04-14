@@ -1,0 +1,36 @@
+# Import necessary libraries
+import os
+import sys
+import pcapy
+from scapy.all import *
+
+# Open a network interface for packet capture
+capture = pcapy.open_live('eth0', 65536, 1, 0)
+
+# Set a capture filter to only capture HTTP traffic on port 80
+capture.setfilter('tcp port 80')
+
+# Define a callback function to handle captured packets
+def packet_handler(hdr, packet):
+    # Extract packet headers and payload
+    ether = Ether(packet)
+    ip = ether.payload
+    tcp = ip.payload
+
+    # Analyze packet contents and log or print results
+    if tcp.dport == 80:
+        http_payload = tcp.payload
+        if http_payload:
+            http_packet = IP(packet)
+            print("HTTP Packet Captured:")
+            http_packet.show()
+
+# Start capturing packets using a loop and the callback function
+while True:
+    try:
+        (header, packet) = capture.next()
+        packet_handler(header, packet)
+    except KeyboardInterrupt:
+        sys.exit(0)
+    except pcapy.PcapError:
+        continue
